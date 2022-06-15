@@ -1,4 +1,4 @@
-ECE124 Labs/Projects.
+#ECE124 Labs/Projects.
 
 ### Lab 1 (~3hours)
 Logic operators with polarity control switch. 
