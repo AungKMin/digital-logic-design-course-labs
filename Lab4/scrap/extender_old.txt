@@ -1,0 +1,148 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+Entity Extender IS Port
+(
+	clk_input, reset, extender, extender_en						: IN std_logic;
+	ext_pos 													: IN std_logic_vector(3 downto 0);
+	clk_en, left_right, grappler_on, extender_out										: OUT std_logic
+ );
+END ENTITY;
+ 
+
+ Architecture E of Extender is
+ 
+ TYPE STATE_NAMES IS (HOLD, DOWN0, DOWN1, UP0, UP1);   -- list all the STATE_NAMES values
+
+ SIGNAL current_state, next_state	:  STATE_NAMES;     	-- signals of type STATE_NAMES
+
+ BEGIN
+ 
+ --------------------------------------------------------------------------------
+ --State Machine:
+ --------------------------------------------------------------------------------
+
+ -- REGISTER_LOGIC PROCESS:
+ 
+Register_Section: PROCESS (clk_input, reset, next_state)  -- this process synchronizes the activity to a clock
+BEGIN
+	IF (reset = '1') THEN
+		current_state <= HOLD;
+	ELSIF(rising_edge(clk_input)) THEN
+		current_state <= next_State;
+	END IF;
+END PROCESS;	
+
+
+
+-- TRANSITION LOGIC PROCESS
+
+Transition_Section: PROCESS (extender, extender_en, ext_pos, current_state) 
+
+BEGIN
+	 IF (extender_en='1') THEN
+		 CASE current_state IS
+				WHEN HOLD =>		
+					IF(extender='1') THEN
+						next_state <= DOWN1;
+					ELSE
+						next_state <= HOLD;
+					END IF;
+
+				WHEN DOWN0 =>		
+					IF (ext_pos="1111") THEN
+						IF (extender='1') THEN
+							next_state <= UP1;
+						ELSE
+							next_state <= DOWN0;
+						END IF;
+					ELSE
+						IF (extender='1') THEN
+							next_state <= DOWN1;
+						ELSE
+							next_state <= DOWN0;
+						END IF;
+					END IF;
+
+				WHEN DOWN1 =>		
+					IF (ext_pos="1111") THEN
+						IF (extender='0') THEN
+							next_state <= UP0;
+						ELSE
+							next_state <= DOWN1;
+						END IF;
+					ELSE
+						IF (extender='1') THEN
+							next_state <= DOWN1;
+						ELSE
+							next_state <= DOWN0;
+						END IF;
+					END IF;
+					
+				WHEN UP1 =>		
+					IF (ext_pos = "0000") THEN
+						next_state <= HOLD;
+					ELSE
+						IF (extender='1') THEN
+							next_state <= UP1;
+						ELSE
+							next_state <= UP0;
+						END IF;
+					END IF;
+
+				WHEN UP0 =>		
+					IF (ext_pos = "0000") THEN
+						next_state <= HOLD;
+					ELSE
+						IF (extender='1') THEN
+							next_state <= UP1;
+						ELSE
+							next_state <= UP0;
+						END IF;
+					END IF;	
+					
+				WHEN OTHERS =>
+					
+			END CASE;
+			
+		END IF;
+
+ END PROCESS;
+
+-- DECODER SECTION PROCESS
+
+Decoder_Section: PROCESS (extender, extender_en, ext_pos, current_state) 
+
+BEGIN
+		
+	  IF (ext_pos = "1111") THEN
+			grappler_en = '1';
+			extender_out 
+	  ELSE 
+			grappler_en = '0';
+	  END IF
+		
+     CASE current_state IS
+         WHEN HOLD =>
+				clk_en <= '0';
+				left_right <= '0';
+			WHEN DOWN0 => 
+				clk_en <= '1';
+				left_right <= '1';
+			WHEN DOWN1 => 
+				clk_en <= '1';
+				left_right <= '1';
+			WHEN UP0 => 
+				clk_en <= '1';
+				left_right <= '0';
+			WHEN UP1 => 
+				clk_en <= '1';
+				left_right <= '0';
+         WHEN OTHERS =>		
+				clk_en <= '0';
+				left_right <= '0';
+	  END CASE;
+ END PROCESS;
+
+ END ARCHITECTURE E;

@@ -1,0 +1,21 @@
+
+State Machine - |LogicalStep_Lab4_top|Grappler:grappler_inst|current_state
+Name current_state.CLOSED0 current_state.CLOSED1 current_state.OPEN1 current_state.OPEN0 
+current_state.OPEN0 0 0 0 0 
+current_state.OPEN1 0 0 1 1 
+current_state.CLOSED1 0 1 0 1 
+current_state.CLOSED0 1 0 0 1 
+
+State Machine - |LogicalStep_Lab4_top|Extender:extender_inst|current_state
+Name current_state.UP1 current_state.DOWN0 current_state.DOWN1 current_state.UP0 
+current_state.UP0 0 0 0 0 
+current_state.DOWN1 0 0 1 1 
+current_state.DOWN0 0 1 0 1 
+current_state.UP1 1 0 0 1 
+
+State Machine - |LogicalStep_Lab4_top|XY_Motion:xy_motion_inst|current_state
+Name current_state.RELEASE current_state.PRESSED current_state.HOLD_ERROR current_state.HOLD 
+current_state.HOLD 0 0 0 0 
+current_state.HOLD_ERROR 0 0 1 1 
+current_state.PRESSED 0 1 0 1 
+current_state.RELEASE 1 0 0 1 
