@@ -1,4 +1,4 @@
-# ECE124 Labs/Projects.
+# Digital Logic Course Labs/Projects.
 
 ### Lab 1 (~3hours)
 Logic operators with polarity control switch. 
